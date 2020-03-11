@@ -24,6 +24,10 @@ FLIGHT_HEIGHT: int = 4
 DISPLAY = pygame.display.set_mode((WINDOW_WIDTH, GAME_HEIGHT + FLOOR_HEIGHT))
 pygame.display.set_caption('Flappy WSF')
 
+FPS = 60 # frames per second setting
+fpsClock = pygame.time.Clock()
+
+
 # Import images
 BACKGROUND_IMAGE = pygame.image.load("bg.png")
 FLOOR = pygame.image.load("ground.png")
@@ -98,24 +102,25 @@ class Bird(pygame.sprite.Sprite):
 
 
 # This timer is set to 1 ms, it is used to move the pipes
-UPDATE = pygame.USEREVENT + 1
+UPDATE = pygame.USEREVENT+1
 pygame.time.set_timer(UPDATE, FRAME_RATE)
+# clock = pygame.time.Clock()
+
 
 
 def main():
     """This function contains the events."""
 
-    # position = WINDOW_WIDTH
     once: bool = True
     pause: bool = True
     flying: int = 0
     pipe_position_a = WINDOW_WIDTH
     pipe_position_b = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
-
     player = Bird(5, BIRD_UP, BIRD_DOWN)
-    
+
     # Event loop
     while True:
+
         # Game background
         if GAME_HEIGHT > WINDOW_WIDTH:
             DISPLAY.blit(pygame.transform.scale(BACKGROUND_IMAGE, (GAME_HEIGHT, GAME_HEIGHT)), (0, 0))
@@ -123,6 +128,49 @@ def main():
             DISPLAY.blit(pygame.transform.scale(BACKGROUND_IMAGE, (WINDOW_WIDTH, WINDOW_WIDTH)), (0, 0))
 
         DISPLAY.blit(pygame.transform.scale(FLOOR, (WINDOW_WIDTH, FLOOR_HEIGHT)), (0, GAME_HEIGHT))
+
+        # event = pygame.event.wait()
+
+        if pause == False:
+                
+            # Pipe generation and movement
+            if once == True:
+                once = False
+                top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
+                top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
+
+            elif pipe_position_a <= 0 - PIPE_WIDTH:
+                top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
+                pipe_position_a = WINDOW_WIDTH
+
+            elif pipe_position_b <= 0 - PIPE_WIDTH:
+                top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
+                pipe_position_b = WINDOW_WIDTH
+
+            # Player generation and mouvment
+            if flying > 0:
+                flying -= 1
+                player.fly()
+
+            else:
+                player.gravity()
+
+            # Add pipe visualls
+            pipe_pair(pipe_position_a, top_height_a, bottom_height_a)
+            pipe_pair(pipe_position_b, top_height_b, bottom_height_b)
+
+            # Move pipe
+            pipe_position_a -= SPEED
+            pipe_position_b -= SPEED
+
+            # Add collision elements
+
+            # collisions = []
+
 
         # Game events
         for event in pygame.event.get():
@@ -139,51 +187,10 @@ def main():
                 else:
                     flying = FLEIGHT_TIME                
 
-            elif pause == False:
-
-                # Pipe generation and movement
-                if event.type == UPDATE:
-                    if once == True:
-                        once = False
-                        top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                        bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
-                        top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                        bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
-
-                    elif pipe_position_a <= 0 - PIPE_WIDTH:
-                        top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                        bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
-                        pipe_position_a = WINDOW_WIDTH
-
-                    elif pipe_position_b <= 0 - PIPE_WIDTH:
-                        top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                        bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
-                        pipe_position_b = WINDOW_WIDTH
-
-                    # Player generation and mouvment
-                    if flying > 0:
-                        flying -= 1
-                        player.fly()
-
-                    else:
-                        player.gravity()
-
-                    # Add pipe visualls
-                    pipe_pair(pipe_position_a, top_height_a, bottom_height_a)
-                    pipe_pair(pipe_position_b, top_height_b, bottom_height_b)
-
-                    # Move pipe
-                    pipe_position_a -= SPEED
-                    pipe_position_b -= SPEED
-
-                    # Add collision elements
-
-                    # collisions = []
-
+            
             player.update()
             pygame.display.update()
 
-            
 
 if __name__ == '__main__':
     main()
