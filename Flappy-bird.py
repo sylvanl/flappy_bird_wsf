@@ -1,4 +1,4 @@
-"""This is an independant python game created spacially for the Web School Factory students to have fun with."""
+"""This is an independant python game created specially for the Web School Factory students to have fun with."""
 import random
 import time
 import pygame
