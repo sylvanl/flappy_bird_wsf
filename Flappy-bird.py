@@ -118,7 +118,7 @@ def main():
     player = Bird(5, BIRD_UP, BIRD_DOWN)
     
     # Event loop
-    while 1:
+    while True:
         # Game background
         if GAME_HEIGHT > WINDOW_WIDTH:
             DISPLAY.blit(pygame.transform.scale(BACKGROUND_IMAGE, (GAME_HEIGHT, GAME_HEIGHT)), (0, 0))
@@ -141,12 +141,14 @@ def main():
 
             elif pause == False:
                 
+                # Player generation and mouvment
                 if event.type == UPDATE_BIRD:
                     if flying > 0:
                         flying -= 1
                         player.fly()
                     else:
                         player.gravity()
+                    
 
                 # Pipe generation and movement
                 elif event.type == UPDATE:
@@ -167,10 +169,17 @@ def main():
                         bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
                         pipe_position_b = WINDOW_WIDTH
 
+                    # Add pipe visualls
                     pipe_pair(pipe_position_a, top_height_a, bottom_height_a)
                     pipe_pair(pipe_position_b, top_height_b, bottom_height_b)
+
+                    # Move pipe
                     pipe_position_a -= SPEED
                     pipe_position_b -= SPEED
+
+                    # Add collision elements
+
+                    # collisions = []
 
             player.update()
             pygame.display.update()
