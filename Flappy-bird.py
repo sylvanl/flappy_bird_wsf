@@ -13,11 +13,12 @@ WINDOW_WIDTH = 600
 # Settings
 PIPE_WIDTH = 60
 MIN_WHOLE_HEIGHT = 100
-HOLE_SIZE = 80
+HOLE_SIZE = 120
 SPEED = 2
-GRAVITY = 30
-FLEIGHT_TIME = 2
-FLIGHT_HEIGHT = 30
+BIRD_UPDATE_TIME = 20
+GRAVITY = 8
+FLEIGHT_TIME = 10
+FLIGHT_HEIGHT = 5
 
 # Display creation
 DISPLAY = pygame.display.set_mode((WINDOW_WIDTH, GAME_HEIGHT + FLOOR_HEIGHT))
@@ -77,7 +78,7 @@ class Bird(pygame.sprite.Sprite):
     def gravity(self):
         """Gravity effects on player function"""
         # pygame.transform.rotate(self.up_image.convert(), 100)
-        self.up_image = pygame.transform.rotate(BIRD_UP, -15)
+        self.up_image = pygame.transform.rotate(BIRD_UP, -30)
         self.y_position += GRAVITY
         self.update()
 
@@ -94,7 +95,7 @@ pygame.time.set_timer(MOVE_PIPE, 1)
 
 # This timer is set to 10 ms, it is used to create gravity
 UPDATE_BIRD = pygame.USEREVENT + 2
-pygame.time.set_timer(UPDATE_BIRD, 100)
+pygame.time.set_timer(UPDATE_BIRD, BIRD_UPDATE_TIME)
 
 
 def main():
