@@ -112,6 +112,7 @@ def main():
     # position = WINDOW_WIDTH
     once = 0
     pause = True
+    flying = 0
     pipe_position_a = WINDOW_WIDTH
     pipe_position_b = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
 
