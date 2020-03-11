@@ -1,6 +1,5 @@
 """This is an independant python game created specially for the Web School Factory students to have fun with."""
 import random
-import time
 import pygame
 from pygame.locals import *
 pygame.init()
@@ -11,6 +10,7 @@ FLOOR_HEIGHT = 100
 WINDOW_WIDTH = 600
 
 # Settings
+FRAME_RATE = 1
 PIPE_WIDTH = 60
 MIN_WHOLE_HEIGHT = 100
 HOLE_SIZE = 120
@@ -51,9 +51,17 @@ def pipe_pair(pipe_position, top_height, bottom_height):
     DISPLAY.blit(pygame.transform.scale(PIPE_END, (PIPE_WIDTH, 30)), (pipe_position, GAME_HEIGHT - bottom_height))
 
 
-# def bird():
-#     """This function represents the player."""
-#     DISPLAY.blit(pygame.transform.scale(BIRD, (40, 40)), (WINDOW_WIDTH / 4, GAME_HEIGHT / 2))
+def floor(floor_position, top_height, bottom_height):
+    """This function generates the floor."""
+
+    # Convert arguments into int format
+    floor_position = int(floor_position)
+    top_height = int(top_height)
+    bottom_height = int(bottom_height)
+
+    # Display floor
+    DISPLAY.blit(pygame.transform.scale(FLOOR, (WINDOW_WIDTH, top_height)), (floor_position, 0))
+
 
 class Bird(pygame.sprite.Sprite):
     """Class representing the player :
@@ -90,8 +98,8 @@ class Bird(pygame.sprite.Sprite):
 
 
 # This timer is set to 1 ms, it is used to move the pipes
-MOVE_PIPE = pygame.USEREVENT + 1
-pygame.time.set_timer(MOVE_PIPE, 1)
+UPDATE = pygame.USEREVENT + 1
+pygame.time.set_timer(UPDATE, FRAME_RATE)
 
 # This timer is set to 10 ms, it is used to create gravity
 UPDATE_BIRD = pygame.USEREVENT + 2
@@ -119,12 +127,6 @@ def main():
 
         DISPLAY.blit(pygame.transform.scale(FLOOR, (WINDOW_WIDTH, FLOOR_HEIGHT)), (0, GAME_HEIGHT))
 
-        # for event in pygame.event.get():
-        #     # Quit game
-        #     if event.type == QUIT:
-        #         pygame.quit()
-        #         quit()
-
         # Game events
         for event in pygame.event.get():
 
@@ -147,7 +149,7 @@ def main():
                         player.gravity()
 
                 # Pipe generation and movement
-                elif event.type == MOVE_PIPE:
+                elif event.type == UPDATE:
                     if once == 0:
                         once = 1
                         top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
