@@ -1,24 +1,24 @@
 """This is an independant python game created specially for the Web School Factory students to have fun with."""
 import random
+import time
 import pygame
 from pygame.locals import *
 pygame.init()
 
 # Window size
-GAME_HEIGHT = 600
-FLOOR_HEIGHT = 100
-WINDOW_WIDTH = 600
+GAME_HEIGHT: int = 600
+FLOOR_HEIGHT: int = 100
+WINDOW_WIDTH: int = 600
 
 # Settings
-FRAME_RATE = 1
-PIPE_WIDTH = 60
-MIN_WHOLE_HEIGHT = 100
-HOLE_SIZE = 120
-SPEED = 2
-BIRD_UPDATE_TIME = 20
-GRAVITY = 8
-FLEIGHT_TIME = 10
-FLIGHT_HEIGHT = 5
+FRAME_RATE: int = 5
+PIPE_WIDTH: int = 60
+MIN_WHOLE_HEIGHT: int = 100
+HOLE_SIZE: int = 120
+SPEED: int = 2
+GRAVITY: int = 2
+FLEIGHT_TIME: int = 20
+FLIGHT_HEIGHT: int = 4
 
 # Display creation
 DISPLAY = pygame.display.set_mode((WINDOW_WIDTH, GAME_HEIGHT + FLOOR_HEIGHT))
@@ -101,18 +101,14 @@ class Bird(pygame.sprite.Sprite):
 UPDATE = pygame.USEREVENT + 1
 pygame.time.set_timer(UPDATE, FRAME_RATE)
 
-# This timer is set to 10 ms, it is used to create gravity
-UPDATE_BIRD = pygame.USEREVENT + 2
-pygame.time.set_timer(UPDATE_BIRD, BIRD_UPDATE_TIME)
-
 
 def main():
     """This function contains the events."""
 
     # position = WINDOW_WIDTH
-    once = 0
-    pause = True
-    flying = 0
+    once: bool = True
+    pause: bool = True
+    flying: int = 0
     pipe_position_a = WINDOW_WIDTH
     pipe_position_b = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
 
@@ -137,24 +133,18 @@ def main():
                 quit()
             
             elif event.type == pygame.KEYDOWN:
-                pause = False
-                flying = FLEIGHT_TIME                
+                if pause == True:
+                    pause = False
+                    # flying = FLEIGHT_TIME                
+                else:
+                    flying = FLEIGHT_TIME                
 
             elif pause == False:
-                
-                # Player generation and mouvment
-                if event.type == UPDATE_BIRD:
-                    if flying > 0:
-                        flying -= 1
-                        player.fly()
-                    else:
-                        player.gravity()
-                    
 
                 # Pipe generation and movement
-                elif event.type == UPDATE:
-                    if once == 0:
-                        once = 1
+                if event.type == UPDATE:
+                    if once == True:
+                        once = False
                         top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
                         bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
                         top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
@@ -170,6 +160,14 @@ def main():
                         bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
                         pipe_position_b = WINDOW_WIDTH
 
+                    # Player generation and mouvment
+                    if flying > 0:
+                        flying -= 1
+                        player.fly()
+
+                    else:
+                        player.gravity()
+
                     # Add pipe visualls
                     pipe_pair(pipe_position_a, top_height_a, bottom_height_a)
                     pipe_pair(pipe_position_b, top_height_b, bottom_height_b)
@@ -184,6 +182,8 @@ def main():
 
             player.update()
             pygame.display.update()
+
+            
 
 if __name__ == '__main__':
     main()
