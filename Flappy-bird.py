@@ -1,6 +1,5 @@
 """This is an independant python game created specially for the Web School Factory students to have fun with."""
 import random
-import time
 import pygame
 from pygame.locals import *
 pygame.init()
@@ -11,10 +10,10 @@ FLOOR_HEIGHT: int = 100
 WINDOW_WIDTH: int = 600
 
 # Settings
-FRAME_RATE: int = 5
+FRAME_RATE: int = 120
 PIPE_WIDTH: int = 60
 MIN_WHOLE_HEIGHT: int = 100
-HOLE_SIZE: int = 120
+HOLE_SIZE: int = 300
 SPEED: int = 2
 GRAVITY: int = 2
 FLEIGHT_TIME: int = 20
@@ -24,8 +23,8 @@ FLIGHT_HEIGHT: int = 4
 DISPLAY = pygame.display.set_mode((WINDOW_WIDTH, GAME_HEIGHT + FLOOR_HEIGHT))
 pygame.display.set_caption('Flappy WSF')
 
-FPS = 60 # frames per second setting
-fpsClock = pygame.time.Clock()
+# FPS = 60 # frames per second setting
+# fpsClock = pygame.time.Clock()
 
 
 # Import images
@@ -75,9 +74,9 @@ class Bird(pygame.sprite.Sprite):
 
     def __init__(self, climb_time, up_image, down_image):
         """Player constructor"""
-        self.x_position = WINDOW_WIDTH / 4
-        self.y_position = GAME_HEIGHT / 2
-        self.climb_time = climb_time
+        self.x_position: int = WINDOW_WIDTH / 4
+        self.y_position: int = GAME_HEIGHT / 2
+        self.climb_time: int = climb_time
         self.up_image = up_image
         self.down_image = down_image
         # Shows player once generated
@@ -85,7 +84,9 @@ class Bird(pygame.sprite.Sprite):
 
     def update(self):
         """Player position update function"""
+        # Update visual
         DISPLAY.blit(pygame.transform.scale(self.up_image, (60, 60)), (self.x_position, self.y_position))
+        player_collision = pygame.Rect(self.x_position, self.y_position, 60, 60)
 
     def gravity(self):
         """Gravity effects on player function"""
@@ -114,9 +115,10 @@ def main():
     once: bool = True
     pause: bool = True
     flying: int = 0
-    pipe_position_a = WINDOW_WIDTH
-    pipe_position_b = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
+    pipe_position_a: int = WINDOW_WIDTH
+    pipe_position_b: int = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
     player = Bird(5, BIRD_UP, BIRD_DOWN)
+    player_collision = pygame.Rect(0, 0, 60, 60)
 
     # Event loop
     while True:
@@ -129,27 +131,26 @@ def main():
 
         DISPLAY.blit(pygame.transform.scale(FLOOR, (WINDOW_WIDTH, FLOOR_HEIGHT)), (0, GAME_HEIGHT))
 
-        # event = pygame.event.wait()
-
+        # Screen update
         if pause == False:
                 
             # Pipe generation and movement
             if once == True:
                 once = False
-                top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
-                top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
+                top_height_a: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_a: int = GAME_HEIGHT - top_height_a - HOLE_SIZE
+                top_height_b: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_b: int = GAME_HEIGHT - top_height_b - HOLE_SIZE
 
             elif pipe_position_a <= 0 - PIPE_WIDTH:
-                top_height_a = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                bottom_height_a = GAME_HEIGHT - top_height_a - HOLE_SIZE
-                pipe_position_a = WINDOW_WIDTH
+                top_height_a: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_a: int = GAME_HEIGHT - top_height_a - HOLE_SIZE
+                pipe_position_a: int = WINDOW_WIDTH
 
             elif pipe_position_b <= 0 - PIPE_WIDTH:
-                top_height_b = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
-                bottom_height_b = GAME_HEIGHT - top_height_b - HOLE_SIZE
-                pipe_position_b = WINDOW_WIDTH
+                top_height_b: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
+                bottom_height_b: int = GAME_HEIGHT - top_height_b - HOLE_SIZE
+                pipe_position_b: int = WINDOW_WIDTH
 
             # Player generation and mouvment
             if flying > 0:
@@ -168,8 +169,17 @@ def main():
             pipe_position_b -= SPEED
 
             # Add collision elements
+            top_pipe_a = pygame.Rect(pipe_position_a, 0, PIPE_WIDTH, top_height_a)
+            bottom_pipe_a = pygame.Rect(pipe_position_a, 0, PIPE_WIDTH, bottom_height_a)
+            top_pipe_b = pygame.Rect(pipe_position_b, 0, PIPE_WIDTH, top_height_b)
+            bottom_pipe_b = pygame.Rect(pipe_position_b, 0, PIPE_WIDTH, bottom_height_b)
 
-            # collisions = []
+            collisions = [top_pipe_a, bottom_pipe_a, top_pipe_b, bottom_pipe_b]
+
+            if player_collision.collidelist(collisions) != -1:
+                pause = True
+            # else:
+                # pause = False
 
 
         # Game events
