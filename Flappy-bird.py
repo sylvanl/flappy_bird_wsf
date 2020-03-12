@@ -14,11 +14,10 @@ WINDOW_WIDTH: int = 600
 FRAME_RATE: int = 60
 PIPE_WIDTH: int = 60
 MIN_WHOLE_HEIGHT: int = 100
-HOLE_SIZE: int = 120
-SPEED: int = 2
-GRAVITY: int = 2
+HOLE_SIZE: int = 140
+GRAVITY: int = 4
 FLEIGHT_TIME: int = 20
-FLIGHT_HEIGHT: int = 2
+FLIGHT_HEIGHT: int = 3
 WHITE = (255, 255, 255)
 FONT = pygame.font.SysFont('sitkasmallsitkatextboldsitkasubheadingboldsitkaheadingboldsitkadisplayboldsitkabannerbold', 60)
 SMALL_FONT = pygame.font.SysFont('sitkasmallsitkatextboldsitkasubheadingboldsitkaheadingboldsitkadisplayboldsitkabannerbold', 40)
@@ -127,6 +126,7 @@ def main():
     player = Bird(5, BIRD_UP, BIRD_DOWN)
     score = 0
     high_score = 0
+    speed: int = 1
 
     # Event loop
     while True:
@@ -180,8 +180,8 @@ def main():
             pipe_pair(pipe_position_b, top_height_b, bottom_height_b)
 
             # Move pipe
-            pipe_position_a -= SPEED
-            pipe_position_b -= SPEED
+            pipe_position_a -= speed
+            pipe_position_b -= speed
 
             # Add collision elements
             floor_hitbox = pygame.Rect(0, GAME_HEIGHT, WINDOW_WIDTH, FLOOR_HEIGHT)
@@ -211,7 +211,9 @@ def main():
             # Scoring counter
             if player.x_position == pipe_position_a or player.x_position == pipe_position_b:
                 score += 1
-                print(score)
+                # Accelerates speed every 5 pipes
+                if score %4 == 0:
+                    speed += 1
 
                 if score > high_score:
                     high_score = score
