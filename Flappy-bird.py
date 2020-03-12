@@ -13,19 +13,15 @@ WINDOW_WIDTH: int = 600
 FRAME_RATE: int = 120
 PIPE_WIDTH: int = 60
 MIN_WHOLE_HEIGHT: int = 100
-HOLE_SIZE: int = 300
+HOLE_SIZE: int = 120
 SPEED: int = 2
 GRAVITY: int = 2
 FLEIGHT_TIME: int = 20
-FLIGHT_HEIGHT: int = 4
+FLIGHT_HEIGHT: int = 2
 
 # Display creation
 DISPLAY = pygame.display.set_mode((WINDOW_WIDTH, GAME_HEIGHT + FLOOR_HEIGHT))
 pygame.display.set_caption('Flappy WSF')
-
-# FPS = 60 # frames per second setting
-# fpsClock = pygame.time.Clock()
-
 
 # Import images
 BACKGROUND_IMAGE = pygame.image.load("bg.png")
@@ -86,7 +82,6 @@ class Bird(pygame.sprite.Sprite):
         """Player position update function"""
         # Update visual
         DISPLAY.blit(pygame.transform.scale(self.up_image, (60, 60)), (self.x_position, self.y_position))
-        player_collision = pygame.Rect(self.x_position, self.y_position, 60, 60)
 
     def gravity(self):
         """Gravity effects on player function"""
@@ -100,6 +95,14 @@ class Bird(pygame.sprite.Sprite):
         self.up_image = pygame.transform.rotate(BIRD_UP, 15)
         self.y_position -= FLIGHT_HEIGHT
         self.update()
+    
+    def x_position(self):
+        """Testing"""
+        return self.x_position
+
+    def y_position(self):
+        """Testing"""
+        return self.y_position
 
 
 # This timer is set to 1 ms, it is used to move the pipes
@@ -118,7 +121,6 @@ def main():
     pipe_position_a: int = WINDOW_WIDTH
     pipe_position_b: int = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
     player = Bird(5, BIRD_UP, BIRD_DOWN)
-    player_collision = pygame.Rect(0, 0, 60, 60)
 
     # Event loop
     while True:
@@ -130,6 +132,8 @@ def main():
             DISPLAY.blit(pygame.transform.scale(BACKGROUND_IMAGE, (WINDOW_WIDTH, WINDOW_WIDTH)), (0, 0))
 
         DISPLAY.blit(pygame.transform.scale(FLOOR, (WINDOW_WIDTH, FLOOR_HEIGHT)), (0, GAME_HEIGHT))
+        player_collision = pygame.Rect(0, 0, 4, 4)
+
 
         # Screen update
         if pause == False:
@@ -141,16 +145,20 @@ def main():
                 bottom_height_a: int = GAME_HEIGHT - top_height_a - HOLE_SIZE
                 top_height_b: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
                 bottom_height_b: int = GAME_HEIGHT - top_height_b - HOLE_SIZE
+                bottom_pipe_y_position_a: int = GAME_HEIGHT - bottom_height_a
+                bottom_pipe_y_position_b: int = GAME_HEIGHT - bottom_height_b
 
             elif pipe_position_a <= 0 - PIPE_WIDTH:
                 top_height_a: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
                 bottom_height_a: int = GAME_HEIGHT - top_height_a - HOLE_SIZE
                 pipe_position_a: int = WINDOW_WIDTH
+                bottom_pipe_y_position_a: int = GAME_HEIGHT - bottom_height_a
 
             elif pipe_position_b <= 0 - PIPE_WIDTH:
                 top_height_b: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
                 bottom_height_b: int = GAME_HEIGHT - top_height_b - HOLE_SIZE
                 pipe_position_b: int = WINDOW_WIDTH
+                bottom_pipe_y_position_b: int = GAME_HEIGHT - bottom_height_b
 
             # Player generation and mouvment
             if flying > 0:
@@ -170,17 +178,26 @@ def main():
 
             # Add collision elements
             top_pipe_a = pygame.Rect(pipe_position_a, 0, PIPE_WIDTH, top_height_a)
-            bottom_pipe_a = pygame.Rect(pipe_position_a, 0, PIPE_WIDTH, bottom_height_a)
+            bottom_pipe_a = pygame.Rect(pipe_position_a, bottom_pipe_y_position_a, PIPE_WIDTH, bottom_height_a)
             top_pipe_b = pygame.Rect(pipe_position_b, 0, PIPE_WIDTH, top_height_b)
-            bottom_pipe_b = pygame.Rect(pipe_position_b, 0, PIPE_WIDTH, bottom_height_b)
-
+            bottom_pipe_b = pygame.Rect(pipe_position_b, bottom_pipe_y_position_b, PIPE_WIDTH, bottom_height_b)
             collisions = [top_pipe_a, bottom_pipe_a, top_pipe_b, bottom_pipe_b]
+            player_collision = pygame.Rect(player.x_position + 15, player.y_position + 15, 30, 30)
+
+            # Debug (show hitboxes)
+            # pygame.draw.rect(DISPLAY, (255,0,255), top_pipe_a)
+            # pygame.draw.rect(DISPLAY, (255,0,255), bottom_pipe_a)
+            # pygame.draw.rect(DISPLAY, (255,0,255), top_pipe_b)
+            # pygame.draw.rect(DISPLAY, (255,0,255), bottom_pipe_b)
+            # pygame.draw.rect(DISPLAY, (255,0,255), player_collision)  
 
             if player_collision.collidelist(collisions) != -1:
                 pause = True
-            # else:
-                # pause = False
-
+                # Add reset here ------------------------------------------------------------------------------------------------------
+                once = True
+                pipe_position_a: int = WINDOW_WIDTH
+                pipe_position_b: int = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
+                player = Bird(5, BIRD_UP, BIRD_DOWN)
 
         # Game events
         for event in pygame.event.get():
@@ -193,9 +210,9 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if pause == True:
                     pause = False
-                    # flying = FLEIGHT_TIME                
+                    # flying = FLEIGHT_TIME
                 else:
-                    flying = FLEIGHT_TIME                
+                    flying = FLEIGHT_TIME
 
             
             player.update()
