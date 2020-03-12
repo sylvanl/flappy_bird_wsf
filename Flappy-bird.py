@@ -1,6 +1,7 @@
 """This is an independant python game created specially for the Web School Factory students to have fun with."""
 import random
 import pygame
+import os
 from pygame.locals import *
 pygame.init()
 
@@ -18,6 +19,9 @@ SPEED: int = 2
 GRAVITY: int = 2
 FLEIGHT_TIME: int = 20
 FLIGHT_HEIGHT: int = 2
+WHITE = (255, 255, 255)
+FONT = pygame.font.SysFont('sitkasmallsitkatextboldsitkasubheadingboldsitkaheadingboldsitkadisplayboldsitkabannerbold', 60)
+SMALL_FONT = pygame.font.SysFont('sitkasmallsitkatextboldsitkasubheadingboldsitkaheadingboldsitkadisplayboldsitkabannerbold', 40)
 
 # Display creation
 DISPLAY = pygame.display.set_mode((WINDOW_WIDTH, GAME_HEIGHT + FLOOR_HEIGHT))
@@ -121,6 +125,8 @@ def main():
     pipe_position_a: int = WINDOW_WIDTH
     pipe_position_b: int = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
     player = Bird(5, BIRD_UP, BIRD_DOWN)
+    score = 0
+    high_score = 0
 
     # Event loop
     while True:
@@ -141,6 +147,7 @@ def main():
             # Pipe generation and movement
             if once == True:
                 once = False
+                score = 0
                 top_height_a: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
                 bottom_height_a: int = GAME_HEIGHT - top_height_a - HOLE_SIZE
                 top_height_b: int = random.randint(MIN_WHOLE_HEIGHT, GAME_HEIGHT - MIN_WHOLE_HEIGHT - HOLE_SIZE)
@@ -177,27 +184,48 @@ def main():
             pipe_position_b -= SPEED
 
             # Add collision elements
+            floor_hitbox = pygame.Rect(0, GAME_HEIGHT, WINDOW_WIDTH, FLOOR_HEIGHT)
             top_pipe_a = pygame.Rect(pipe_position_a, 0, PIPE_WIDTH, top_height_a)
             bottom_pipe_a = pygame.Rect(pipe_position_a, bottom_pipe_y_position_a, PIPE_WIDTH, bottom_height_a)
             top_pipe_b = pygame.Rect(pipe_position_b, 0, PIPE_WIDTH, top_height_b)
             bottom_pipe_b = pygame.Rect(pipe_position_b, bottom_pipe_y_position_b, PIPE_WIDTH, bottom_height_b)
-            collisions = [top_pipe_a, bottom_pipe_a, top_pipe_b, bottom_pipe_b]
+            collisions = [floor_hitbox, top_pipe_a, bottom_pipe_a, top_pipe_b, bottom_pipe_b]
             player_collision = pygame.Rect(player.x_position + 15, player.y_position + 15, 30, 30)
 
             # Debug (show hitboxes)
+            # pygame.draw.rect(DISPLAY, (255,0,255), floor_hitbox)
             # pygame.draw.rect(DISPLAY, (255,0,255), top_pipe_a)
             # pygame.draw.rect(DISPLAY, (255,0,255), bottom_pipe_a)
             # pygame.draw.rect(DISPLAY, (255,0,255), top_pipe_b)
             # pygame.draw.rect(DISPLAY, (255,0,255), bottom_pipe_b)
             # pygame.draw.rect(DISPLAY, (255,0,255), player_collision)  
 
+            # Collision and reset
             if player_collision.collidelist(collisions) != -1:
                 pause = True
-                # Add reset here ------------------------------------------------------------------------------------------------------
                 once = True
                 pipe_position_a: int = WINDOW_WIDTH
                 pipe_position_b: int = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
                 player = Bird(5, BIRD_UP, BIRD_DOWN)
+            
+            # Scoring counter
+            if player.x_position == pipe_position_a or player.x_position == pipe_position_b:
+                score += 1
+                print(score)
+
+                if score > high_score:
+                    high_score = score
+
+            display_score = FONT.render(str(score), False, WHITE)
+            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 20, 20))
+
+        else:
+            display_game_over = FONT.render("GAME OVER", False, WHITE)
+            DISPLAY.blit(display_game_over, (WINDOW_WIDTH / 2 - 200, 60))   
+            display_score = SMALL_FONT.render("Score : " + str(score), False, WHITE)
+            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 100, 120))
+            display_score = SMALL_FONT.render("High score : " + str(high_score), False, WHITE)
+            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 160, 160))
 
         # Game events
         for event in pygame.event.get():
@@ -210,11 +238,9 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if pause == True:
                     pause = False
-                    # flying = FLEIGHT_TIME
                 else:
                     flying = FLEIGHT_TIME
 
-            
             player.update()
             pygame.display.update()
 
