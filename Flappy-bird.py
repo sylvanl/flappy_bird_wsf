@@ -11,7 +11,7 @@ FLOOR_HEIGHT: int = 100
 WINDOW_WIDTH: int = 600
 
 # Settings
-FRAME_RATE: int = 120
+FRAME_RATE: int = 60
 PIPE_WIDTH: int = 60
 MIN_WHOLE_HEIGHT: int = 100
 HOLE_SIZE: int = 120
@@ -223,9 +223,9 @@ def main():
             display_game_over = FONT.render("GAME OVER", False, WHITE)
             DISPLAY.blit(display_game_over, (WINDOW_WIDTH / 2 - 200, 60))   
             display_score = SMALL_FONT.render("Score : " + str(score), False, WHITE)
-            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 100, 120))
+            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 100, 130))
             display_score = SMALL_FONT.render("High score : " + str(high_score), False, WHITE)
-            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 160, 160))
+            DISPLAY.blit(display_score, (WINDOW_WIDTH / 2 - 160, 180))
 
         # Game events
         for event in pygame.event.get():
