@@ -207,6 +207,7 @@ def main():
                 pipe_position_a: int = WINDOW_WIDTH
                 pipe_position_b: int = WINDOW_WIDTH + ((WINDOW_WIDTH + PIPE_WIDTH) / 2)
                 player = Bird(5, BIRD_UP, BIRD_DOWN)
+                speed = 1
             
             # Scoring counter
             if player.x_position == pipe_position_a or player.x_position == pipe_position_b:
